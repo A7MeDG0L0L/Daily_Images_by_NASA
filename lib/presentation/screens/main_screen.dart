@@ -136,90 +136,103 @@ if (state is GetDataSuccess) {
 return SingleChildScrollView(
 child: Padding(
 padding: const EdgeInsets.all(8.0),
-child: Column(
-mainAxisAlignment: MainAxisAlignment.start,
-crossAxisAlignment: CrossAxisAlignment.start,
-children: [
-Text(state.dataModel.title,
-style: Theme.of(context).textTheme.headline5),
-SizedBox(
-height: 5,
-),
-if (state.dataModel.copyright != null)
-Text('Copyright : ${state.dataModel.copyright}'),
-SizedBox(
-height: 5,
-),
-Text('date : ${state.dataModel.date}'),
-SizedBox(
-height: 20,
-),
-Center(
-child: Stack(
-children: [
-InkWell(
-onTap: () {
-showDialog(
-context: context,
-builder: (context) => PinchZoom(
-onZoomStart: () {
-print('Start Zoom');
-},
-onZoomEnd: () {
-print('End Zoom');
-},
-zoomEnabled: true,
-resetDuration:
-const Duration(milliseconds: 100),
-maxScale: 2.5,
-child: Image.network(
-state.dataModel.url,
-),
-),
-);
-},
-child: ClipRRect(
-borderRadius: BorderRadius.circular(30),
-child: Image.network(
-state.dataModel.mediaType =='video' ?
-state.dataModel.thumbs!:state.dataModel.url,
-width: 300,
-),
-),
-),
-InkWell(
-onTap: () {
-MainCubit.get(context)
-    .saveNetworkImage(state.dataModel.url);
-},
-child: const CircleAvatar(
-child: const Icon(
-Icons.save_alt_rounded,
-),
-backgroundColor: Colors.lightBlueAccent,
-radius: 15),
-),
-],
-),
-),
-//Text(state.dataModel.title),
-SizedBox(
-height: 10,
-),
-ExpandablePanel(
-header: Text(state.dataModel.title),
-collapsed: Text(
-state.dataModel.explanation,
-softWrap: true,
-maxLines: 2,
-overflow: TextOverflow.ellipsis,
-),
-expanded: Text(
-state.dataModel.explanation,
-softWrap: true,
-),
-),
-],
+child: Dismissible(
+  onDismissed: (DismissDirection direction){
+    print(direction);
+    if(direction ==DismissDirection.endToStart){
+
+      MainCubit.get(context).getPrevData();
+    }
+    if(direction == DismissDirection.startToEnd) {
+      MainCubit.get(context).getNextData();
+    }
+  },
+  key: UniqueKey(),
+  child:   Column(
+  mainAxisAlignment: MainAxisAlignment.start,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+  Text(state.dataModel.title,
+  style: Theme.of(context).textTheme.headline5),
+  SizedBox(
+  height: 5,
+  ),
+  if (state.dataModel.copyright != null)
+  Text('Copyright : ${state.dataModel.copyright}'),
+  SizedBox(
+  height: 5,
+  ),
+  Text('date : ${state.dataModel.date}'),
+  SizedBox(
+  height: 20,
+  ),
+  Center(
+  child: Stack(
+  children: [
+  InkWell(
+  onTap: () {
+  showDialog(
+  context: context,
+  builder: (context) => PinchZoom(
+  onZoomStart: () {
+  print('Start Zoom');
+  },
+  onZoomEnd: () {
+  print('End Zoom');
+  },
+  zoomEnabled: true,
+  resetDuration:
+  const Duration(milliseconds: 100),
+  maxScale: 2.5,
+  child: Image.network(
+  state.dataModel.url,
+  ),
+  ),
+  );
+  },
+  child: ClipRRect(
+  borderRadius: BorderRadius.circular(30),
+  child: Image.network(
+  state.dataModel.mediaType =='video' ?
+  state.dataModel.thumbs!:state.dataModel.url,
+  width: 300,
+  ),
+  ),
+  ),
+  InkWell(
+  onTap: () {
+  MainCubit.get(context)
+      .saveNetworkImage(state.dataModel.url);
+  },
+  child: const CircleAvatar(
+  child: const Icon(
+  Icons.save_alt_rounded,
+  ),
+  backgroundColor: Colors.lightBlueAccent,
+  radius: 15),
+  ),
+  ],
+  ),
+  ),
+  //Text(state.dataModel.title),
+  SizedBox(
+  height: 10,
+  ),
+  ExpandablePanel(
+  header: Text(state.dataModel.title),
+  collapsed: Text(
+  state.dataModel.explanation,
+  softWrap: true,
+  maxLines: 2,
+  overflow: TextOverflow.ellipsis,
+  ),
+  expanded: Text(
+  state.dataModel.explanation,
+  softWrap: true,
+  ),
+  ),
+  ],
+  ),
 ),
 ),
 );
