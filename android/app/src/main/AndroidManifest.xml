@@ -2,7 +2,7 @@
     package="com.nasa.images.daily_nasa_image">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
    <application
-        android:label="daily_nasa_image"
+        android:label="Daily Images By NASA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:daily_nasa_image/business_logic/main_cubit/main_cubit.dart';
 import 'package:daily_nasa_image/business_logic/main_cubit/main_states.dart';
 import 'package:daily_nasa_image/presentation/style/custom_app_bar.dart';
@@ -6,14 +9,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
    MainScreen({Key? key}) : super(key: key);
 
-  var fapKey = GlobalKey<ScaffoldState>();
+   static late ConnectivityResult connectivity;
 
   @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  var fapKey = GlobalKey<ScaffoldState>();
+
+  // final bool connected = MainScreen.connectivity != ConnectivityResult.none;
+  late StreamSubscription<ConnectivityResult> subscription;
+   String? result;
+   bool isNetworkAvailable=false;
+
+   @override
+  void initState() {
+
+      subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+print(result.name);
+//MainCubit.get(context).getData();
+setState(() {
+  this.result = result.name;
+});
+
+        print(this.result);
+
+        // if(result.name=='ConnectivityResult.none'){
+        //   isNetworkAvailable = !isNetworkAvailable;
+        // }
+if(result.name != 'none'){
+  isNetworkAvailable = true;
+  MainCubit.get(context).getData();
+}else {
+  isNetworkAvailable = false;
+}
+print(subscription);
+     });
+
+
+     super.initState();
+  }
+  @override
+  void dispose() {
+     subscription.cancel();
+
+    super.dispose();
+  }
+
+   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainStates>(
       listener: (context, state) {
@@ -24,11 +74,12 @@ class MainScreen extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: Text('Daily Images By NASA'),
           ),
           //appBar: BlurredAppBar(url:MainCubit.get(context).dataModel.url ,),
-          floatingActionButton: Row(
+          floatingActionButton: isNetworkAvailable? Row(
             mainAxisAlignment: MainAxisAlignment.end,
 
             children: [
@@ -50,7 +101,7 @@ class MainScreen extends StatelessWidget {
                 child: Icon(Icons.navigate_next),
               ),
             ],
-          ),
+          ):SizedBox(),
           body: OfflineBuilder(
             connectivityBuilder: (
                 BuildContext context,
@@ -63,21 +114,11 @@ class MainScreen extends StatelessWidget {
               }
               else {
                 return Center(
-                  child: Text('No Internet...'),
+                  child: Lottie.asset('assets/json/no-internet.json'),
                 );
               }
             },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Text(
-                  'There are no bottons to push :)',
-                ),
-                new Text(
-                  'Just turn off your internet.',
-                ),
-              ],
-            ),
+            child: Center(child: CircularProgressIndicator(),),
           ),
         );
       },
