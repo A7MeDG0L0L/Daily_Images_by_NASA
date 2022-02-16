@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc_observer.dart';
+import 'data/dio_helper/dio_helper.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MainCubit.initDio();
+  DioHelper.initDio();
 
   BlocOverrides.runZoned(
         () {
